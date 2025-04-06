@@ -5,8 +5,8 @@
 <div class="col vh-100">
     <div class="d-flex justify-content-between align-items-center">
         <div class="d-flex align-items-center gap-2 mb-3">
-            <h3>Hottest Questions</h3>
-            <a href="{% url "index" %}">Newest Questions</a>
+            <h3>Newest Questions</h3>
+            <a href="{% url "hot" %}">Hottest Questions</a>
         </div>
         <div class="text-muted fs-6 mt-2 mt-md-0">
             {{ page.paginator.count }} questions
