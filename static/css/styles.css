@@ -24,9 +24,9 @@
 }
 
 .pagination .active .page-link {
-    background-color: #0e5fff;
+    background-color: #3E99E3;
     color: white;
-    box-shadow: 0 0 4px #0b5ed7, 0 0 8px #0b5ed7;
+    box-shadow: 0 0 4px #3E99E3, 0 0 8px #3E99E3;
 }
 
 .pagination .disabled .page-link {
@@ -54,4 +54,13 @@
 .tag:hover {
     background-color: #e8e9eb;
     color: #111;
+}
+
+.btn-primary:hover {
+    background-color: #0F80CB !important;
+}
+
+.btn-outline-primary:hover, .btn-primary {
+    border-color: #3E99E3 !important;
+    background-color: #3E99E3 !important;
 }

@@ -34,3 +34,9 @@ def tag(request, tag_name):
     paginator = Paginator(filtered_questions, 5)
     page = paginator.page(page_num)
     return render(request, 'tag_questions.html', context={'questions': page.object_list, 'page': page, 'tag': tag_name})
+
+def login(request):
+    return render(request, 'login.html')
+
+def signup(request):
+    return render(request, 'register.html')

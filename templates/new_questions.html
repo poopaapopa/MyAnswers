@@ -2,22 +2,20 @@
 {% load static %}
 
 {% block content %}
-<div class="col vh-100">
-    <div class="d-flex justify-content-between align-items-center">
-        <div class="d-flex align-items-center gap-2 mb-3">
-            <h3>Newest Questions</h3>
-            <a href="{% url "hot" %}">Hottest Questions</a>
-        </div>
-        <div class="text-muted fs-6 mt-2 mt-md-0">
-            {{ page.paginator.count }} questions
-        </div>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="d-flex align-items-center gap-2">
+        <h3>Newest Questions</h3>
+        <a href="{% url "hot" %}">Hottest Questions</a>
     </div>
+    <div class="text-muted fs-6 mt-2 mt-md-0">
+        {{ page.paginator.count }} questions
+    </div>
+</div>
 
-    <div class="d-flex gap-3 flex-column">
-        {% for question in questions %}
-            {% include "layout/question.html" %}
-        {% endfor %}
-        {% include "layout/pagination.html" %}
-    </div>
+<div class="d-flex gap-3 flex-column">
+    {% for question in questions %}
+        {% include "layout/question.html" %}
+    {% endfor %}
+    {% include "layout/pagination.html" %}
 </div>
 {% endblock %}
