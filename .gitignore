@@ -1,0 +1,10 @@
+venv/
+.idea/
+static/bootstrap-5.3.3-dist/
+static/bootstrap-icons-1.11.3/
+static/images/
+uploads/
+db.sqlite3
+*.pyc
+*.pyo
+*.pyd

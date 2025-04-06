@@ -1,0 +1,29 @@
+{% extends "layout/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="col vh-100">
+    <div class="d-flex align-items-center gap-2 mb-3">
+        <h1>{{ question.title }}</h1>
+    </div>
+
+    <div class="d-flex gap-3 flex-column">
+        {% include "layout/question.html" %}
+        <nav aria-label="Pagination nav example">
+            <ul class="pagination">
+                <li class="page-item disabled">
+                    <a class="page-link">Previous</a>
+                </li>
+                <li class="page-item"><a class="page-link" href="#">1</a></li>
+                <li class="page-item active" aria-current="page">
+                    <a class="page-link" href="#">2</a>
+                </li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item">
+                    <a class="page-link" href="#">Next</a>
+                </li>
+          </ul>
+        </nav>
+    </div>
+</div>
+{% endblock %}
