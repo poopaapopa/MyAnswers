@@ -40,3 +40,6 @@ def login(request):
 
 def signup(request):
     return render(request, 'register.html')
+
+def ask(request):
+    return render(request, 'ask_question.html')
