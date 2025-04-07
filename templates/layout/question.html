@@ -1,23 +1,23 @@
 {% load static %}
-<div class="card shadow-sm rounded-4 p-3 mb-4">
+<div class="card shadow-sm rounded-4 p-3 mb-2">
   <div class="row g-3 align-items-center">
     <div class="col-auto text-center">
       <div class="border rounded-3 overflow-hidden" style="width: 100px; height: 100px;">
         <img src="{% static question.img_path %}" alt="img" class="img-fluid object-fit-cover w-100 h-100">
       </div>
-      <input type="number" class="form-control mt-2 text-center" value="5" style="width: 80px;">
+      <input type="number" class="form-control mt-2 text-center" value="{{ question.rating }}" style="width: 80px;">
     </div>
     <div class="col">
       <div class="d-flex flex-column h-100 justify-content-between">
-        <div>
+        <div class="justify-content-between">
           <h5 class="card-title mb-2">
-            <a href="{% url 'question' question.id %}" class="text-decoration-none text-dark">{{ question.title }}</a>
+            <a href="{% url 'question' question.id %}" class="text-decoration-none">{{ question.title }}</a>
           </h5>
-          <p class="card-text text-muted small mb-3">
+          <p class="card-text mb-3">
             {{ question.text }}
           </p>
         </div>
-        <div class="d-flex justify-content-between align-items-center small">
+        <div class="d-flex justify-content-between align-items-center">
           <div>
             <a href="{% url 'question' question.id %}" class="text-primary text-decoration-none">
               Answer (3)
