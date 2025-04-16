@@ -1,52 +1,43 @@
-import copy
 from django.core.paginator import Paginator
-from django.shortcuts import render
-
-QUESTIONS = [
-    {
-        'title': f"Title {i}",
-        'id': i,
-        'text': f"I have a question regarding R function syntax. "
-                f"I've noticed that the following function works fine without curly braces. "
-                f"This is text for question {i}",
-        "img_path": "images/avatar.png",
-        'tags': ["python", "perl", "javascript", "react", "c#"],
-        'rating': 5,
-    } for i in range(30)
-]
-
-ANSWERS = [
-    {
-        'id': i,
-        'text': f"The general format of a function is a header followed by a single statement that makes up the body of the function. "
-                f"Using braces around several statements makes them appear to the parser as a single statement. "
-                f"This is text for answer {i}",
-        "img_path": "images/avatar.png",
-    } for i in range(3)
-]
+from django.shortcuts import render, get_object_or_404
+from app.models import Question, Answer
+from django.http import Http404
 
 def paginate(objects_list, request, per_page=10):
-    page_num = int(request.GET.get('page', 1))
+    page_num = request.GET.get('page', 1)
     paginator = Paginator(objects_list, per_page)
-    page = paginator.page(page_num)
+    page = paginator.get_page(page_num)
     return page
 
 def index(request):
-    page = paginate(QUESTIONS, request, 5)
-    return render(request, 'new_questions.html', context={'questions': page.object_list, 'page': page})
+    questions = Question.objects.recent()
+    page = paginate(questions, request, 5)
+    ids = [q.id for q in page.object_list]
+    questions = [Question.objects.full_info(id) for id in ids]
+    return render(request, 'new_questions.html', context={'questions': questions, 'page': page})
 
 def hot(request):
-    q = list(reversed(copy.deepcopy(QUESTIONS)))
-    page = paginate(q, request, 5)
-    return render(request, 'hot_questions.html', context={'questions': page.object_list, 'page': page})
+    questions = Question.objects.popular()
+    page = paginate(questions, request, 5)
+    ids = [q.id for q in page.object_list]
+    questions = [Question.objects.full_info(id) for id in ids]
+    return render(request, 'hot_questions.html', context={'questions': questions, 'page': page})
 
 def question(request, question_id):
-    return render(request, 'single_question.html', context={'question': QUESTIONS[question_id], 'answers': ANSWERS})
+    q = Question.objects.full_info(question_id)
+    if not q:
+        raise Http404("Question does not exist")
+    answers = Answer.objects.answers(q)
+    return render(request, 'single_question.html', context={'question': q, 'answers': answers})
 
 def tag(request, tag_name):
-    filtered_questions = [q for q in QUESTIONS if tag_name in q['tags']]
+    filtered_questions = Question.objects.by_tag(tag_name)
+    if not filtered_questions:
+        raise Http404("Tag does not exist")
     page = paginate(filtered_questions, request, 5)
-    return render(request, 'tag_questions.html', context={'questions': page.object_list, 'page': page, 'tag': tag_name})
+    ids = [q.id for q in page.object_list]
+    questions = [Question.objects.full_info(id) for id in ids]
+    return render(request, 'tag_questions.html', context={'questions': questions, 'page': page, 'tag': tag_name})
 
 def login(request):
     return render(request, 'login.html')

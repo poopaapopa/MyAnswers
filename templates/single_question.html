@@ -7,9 +7,9 @@
         <div class="col-auto">
             <div class="d-flex flex-column align-items-start">
                 <div class="border rounded-3 overflow-hidden mb-2" style="width: 150px; height: 150px;">
-                    <img src="{% static question.img_path %}" alt="avatar" class="img-fluid object-fit-cover w-100 h-100">
+                    <img src="{% static question.questioner.profile.avatar %}" alt="avatar" class="img-fluid object-fit-cover w-100 h-100">
                 </div>
-                <input type="number" class="form-control text-center mt-2" value="{{ question.rating }}" style="width: 80px;">
+                <input type="number" class="form-control text-center mt-2" value="{{ question.like_count }}" style="width: 80px;">
             </div>
         </div>
 
@@ -22,8 +22,8 @@
             </div>
 
             <div class="d-flex flex-wrap align-items-center gap-2 mt-4">
-                {% for tag in question.tags %}
-                <a class="tag" href="{% url 'tag' tag %}">{{ tag }}</a>
+                {% for tag in question.tags.all %}
+                    <a class="tag" href="{% url 'tag' tag.name %}">{{ tag.name }}</a>
                 {% endfor %}
             </div>
         </div>
