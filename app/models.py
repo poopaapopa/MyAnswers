@@ -73,4 +73,4 @@ class Tag(models.Model):
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    avatar = models.CharField(max_length=255)
+    avatar = models.ImageField(upload_to='avatars')

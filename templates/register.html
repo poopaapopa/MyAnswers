@@ -1,43 +1,16 @@
 {% extends "layout/base.html" %}
 {% load static %}
+{% load bootstrap5 %}
 
 {% block content %}
 <div class="d-flex justify-content-center align-items-center mt-3">
     <div class="card p-4" style="width: 50rem; height: 100%; background-color: #E2E9F4;">
         <h3 class="mb-3">Registration</h3>
-        <form id="regForm">
-            <div class="mb-3">
-                <label for="nickname" class="form-label">Nickname</label>
-                <input type="text" class="form-control" id="nickname" name="nickname" placeholder="Nickname" required>
-            </div>
-
-            <div class="mb-3">
-                <label for="email" class="form-label">Email address</label>
-                <input type="email" class="form-control" id="email" name="email" placeholder="Email" required>
-            </div>
-
-            <div class="mb-3">
-                <label for="username" class="form-label">Login</label>
-                <input type="text" class="form-control" id="username" name="login" placeholder="Login" required>
-            </div>
-
-            <div class="mb-3">
-                <label for="password" class="form-label">Password</label>
-                <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
-            </div>
-
-            <div class="mb-3">
-                <label for="confirm_password" class="form-label">Confirm password</label>
-                <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Repeat password" required>
-            </div>
-
-            <div class="mb-4">
-                <label for="avatar" class="form-label">Upload Avatar</label>
-                <input class="form-control" type="file" id="avatar" name="avatar" accept="uploads/*" placeholder="Upload avatar">
-            </div>
-
+        <form action="{% url "signup" %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {% bootstrap_form form %}
             <div class="d-grid">
-                <button type="submit" class="btn btn-primary" id="submitButton">Register</button>
+                <button type="submit" class="btn btn-primary">Register</button>
             </div>
         </form>
     </div>

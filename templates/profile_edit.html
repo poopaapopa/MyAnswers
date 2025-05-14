@@ -5,12 +5,12 @@
 {% block content %}
 <div class="d-flex justify-content-center align-items-center mt-3">
     <div class="card p-4" style="width: 50rem; height: 100%; background-color: #E2E9F4;">
-        <h3 class="mb-3">Login</h3>
-        <form action="{% url "login" %}" method="POST">
+        <h3 class="mb-3">Settings: {{ nickname }}</h3>
+        <form action="{% url "edit" %}" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             {% bootstrap_form form %}
             <div class="d-grid">
-                <button type="submit" class="btn btn-primary">Login</button>
+                <button type="submit" class="btn btn-primary" id="submitButton">Save</button>
             </div>
         </form>
     </div>
