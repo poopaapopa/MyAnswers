@@ -1,5 +1,4 @@
 {% extends "layout/base.html" %}
-{% load static %}
 
 {% block content %}
 <div class="container-fluid px-0">
@@ -7,7 +6,7 @@
         <div class="col-auto">
             <div class="d-flex flex-column align-items-start">
                 <div class="border rounded-3 overflow-hidden mb-2" style="width: 150px; height: 150px;">
-                    <img src="{% static question.questioner.profile.avatar %}" alt="avatar" class="img-fluid object-fit-cover w-100 h-100">
+                    <img src="{{ question.questioner.profile.avatar.url }}" alt="avatar" class="img-fluid object-fit-cover w-100 h-100">
                 </div>
                 <input type="number" class="form-control text-center mt-2" value="{{ question.like_count }}" style="width: 80px;">
             </div>
@@ -18,7 +17,7 @@
                 <h3>{{ question.title }}</h3>
             </div>
             <div class="mb-4">
-                <p class="fs-5">{{ question.text }}</p>
+                <p class="fs-5">{{ question.body }}</p>
             </div>
 
             <div class="d-flex flex-wrap align-items-center gap-2 mt-4">

@@ -1,7 +1,7 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.core.paginator import Paginator
 from django.shortcuts import render, redirect
-from app.forms import LoginForm, RegisterForm, UserProfileForm
+from app.forms import LoginForm, RegisterForm, UserProfileForm, AskQuestionForm
 from app.models import Question, Answer
 from django.http import Http404
 from django.urls import reverse, reverse_lazy
@@ -69,8 +69,16 @@ def signup(request):
         form = RegisterForm()
     return render(request, 'register.html', {'form': form})
 
+@login_required(login_url=reverse_lazy('login'))
 def ask(request):
-    return render(request, 'ask_question.html')
+    if request.method == 'POST':
+        form = AskQuestionForm(request.POST, user=request.user)
+        if form.is_valid():
+            question_id = form.save()
+            return redirect(reverse('question', args=[question_id]))
+    else:
+        form = AskQuestionForm()
+    return render(request, 'ask_question.html', {'form': form})
 
 @login_required(login_url=reverse_lazy('login'))
 def profile_edit(request):

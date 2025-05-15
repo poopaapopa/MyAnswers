@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
-from app.models import Profile
+from app.models import Profile, Question, Tag
+
 
 class LoginForm(forms.Form):
     username = forms.CharField()
@@ -84,9 +85,40 @@ class UserProfileForm(forms.ModelForm):
         if commit:
             user.save()
             image = self.cleaned_data.get('avatar')
-            print(1)
             if image:
-                print(2)
                 profile = user.profile
                 profile.avatar = image
                 profile.save()
+
+class AskQuestionForm(forms.ModelForm):
+    tags_field = forms.CharField(
+        widget=forms.TextInput(attrs={
+            'placeholder': 'e.g. css, html, flexbox',
+        })
+    )
+    class Meta:
+        model = Question
+        fields = ('title', 'body', 'tags_field')
+        widgets = {
+            'title': forms.TextInput(attrs={
+                'placeholder': 'e.g. How to center a div in CSS?'
+            }),
+            'body': forms.Textarea(attrs={
+                'placeholder': "e.g. I tried using flexbox, but the div isn't centered..."
+            })
+        }
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+
+    def save(self, commit=True):
+        question = super().save(commit=False)
+        question.questioner = self.user
+        if commit:
+            question.save()
+            tags = self.cleaned_data['tags_field'].split(' ')
+            for tag_name in tags:
+                tag, _ = Tag.objects.get_or_create(name=tag_name)
+                question.tags.add(tag)
+        return question.id
