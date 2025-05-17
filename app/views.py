@@ -1,7 +1,7 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.core.paginator import Paginator
 from django.shortcuts import render, redirect
-from app.forms import LoginForm, RegisterForm, UserProfileForm, AskQuestionForm
+from app.forms import LoginForm, RegisterForm, UserProfileForm, AskQuestionForm, AnswerForm
 from app.models import Question, Answer
 from django.http import Http404
 from django.urls import reverse, reverse_lazy
@@ -30,11 +30,17 @@ def hot(request):
     return render(request, 'hot_questions.html', context={'questions': questions, 'page': page})
 
 def question(request, question_id):
+    if request.method == 'POST':
+        form = AnswerForm(request.POST, user=request.user, question_id=question_id)
+        if form.is_valid():
+            answer = form.save()
+            return redirect(f"{reverse('question', args=[question_id])}#answer-{answer.id}")
     q = Question.objects.full_info(question_id)
     if not q:
         raise Http404("Question does not exist")
     answers = Answer.objects.answers(q)
-    return render(request, 'single_question.html', context={'question': q, 'answers': answers})
+    form = AnswerForm()
+    return render(request, 'single_question.html', context={'question': q, 'answers': answers, 'form': form, 'user': request.user})
 
 def tag(request, tag_name):
     filtered_questions = Question.objects.by_tag(tag_name)
@@ -74,8 +80,8 @@ def ask(request):
     if request.method == 'POST':
         form = AskQuestionForm(request.POST, user=request.user)
         if form.is_valid():
-            question_id = form.save()
-            return redirect(reverse('question', args=[question_id]))
+            question = form.save()
+            return redirect(reverse('question', args=[question.id]))
     else:
         form = AskQuestionForm()
     return render(request, 'ask_question.html', {'form': form})

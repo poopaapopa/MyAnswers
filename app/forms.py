@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
-from app.models import Profile, Question, Tag
+from app.models import Profile, Question, Tag, Answer
 
 
 class LoginForm(forms.Form):
@@ -121,4 +121,27 @@ class AskQuestionForm(forms.ModelForm):
             for tag_name in tags:
                 tag, _ = Tag.objects.get_or_create(name=tag_name)
                 question.tags.add(tag)
-        return question.id
+        return question
+
+class AnswerForm(forms.ModelForm):
+    class Meta:
+        model = Answer
+        fields = ('text',)
+        widgets = {
+            'text': forms.Textarea(attrs={
+                'placeholder': ""
+            }),
+        }
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        self.question_id = kwargs.pop('question_id', None)
+        super().__init__(*args, **kwargs)
+
+    def save(self, commit=True):
+        answer = super().save(commit=False)
+        answer.question_id = self.question_id
+        answer.answerer = self.user
+        if commit:
+            answer.save()
+        return answer

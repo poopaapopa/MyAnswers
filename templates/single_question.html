@@ -1,4 +1,5 @@
 {% extends "layout/base.html" %}
+{% load bootstrap5 %}
 
 {% block content %}
 <div class="container-fluid px-0">
@@ -36,14 +37,15 @@
         {% endfor %}
     </div>
 
+    {% if user != question.questioner %}
     <div class="mt-5">
         <h4 class="mb-3">Your Answer</h4>
-        <form method="post">
-            <div class="mb-3">
-                <textarea class="form-control" rows="8" required></textarea>
-            </div>
+        <form action="{% url "question" question.id %}" method="POST">
+            {% csrf_token %}
+            {% bootstrap_form form show_label=False %}
             <button type="submit" class="btn btn-primary mb-4">Post Your Answer</button>
         </form>
     </div>
+    {% endif %}
 </div>
 {% endblock %}
