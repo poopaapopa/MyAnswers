@@ -74,27 +74,49 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS(f'Created {num_answers} answers.'))
 
         # QUESTION LIKES
-        for _ in range(num_likes):
-            try:
+        question_like_set = set()
+        attempts = 0
+        created_likes = 0
+        while created_likes < num_likes and attempts < num_likes * 10:
+            user = random.choice(users)
+            question = random.choice(questions)
+            key = (user.id, question.id)
+            if key not in question_like_set:
+                is_like = random.choice([True, False])
                 QuestionLike.objects.create(
-                    question=random.choice(questions),
-                    liker=random.choice(users)
+                    question=question,
+                    liker=user,
+                    is_like=is_like
                 )
-            except:
-                pass
+                question_like_set.add(key)
+                created_likes += 1
+                question.rating += 1 if is_like else -1
+                question.save()
+            attempts += 1
 
-        self.stdout.write(self.style.SUCCESS(f'Created {num_likes} question likes.'))
+        self.stdout.write(self.style.SUCCESS(f'Created {created_likes} unique question likes.'))
 
         # ANSWER LIKES
-        for _ in range(num_likes):
-            try:
+        answer_like_set = set()
+        attempts = 0
+        created_likes = 0
+        while created_likes < num_likes and attempts < num_likes * 10:
+            user = random.choice(users)
+            answer = random.choice(answers)
+            key = (user.id, answer.id)
+            if key not in answer_like_set:
+                is_like = random.choice([True, False])
                 AnswerLike.objects.create(
-                    answer=random.choice(answers),
-                    liker=random.choice(users)
+                    answer=answer,
+                    liker=user,
+                    is_like=is_like
                 )
-            except:
-                pass
+                answer_like_set.add(key)
+                created_likes += 1
+                answer.rating += 1 if is_like else -1
+                answer.save()
+            attempts += 1
 
-        self.stdout.write(self.style.SUCCESS(f'Created {num_likes} answer likes.'))
+        self.stdout.write(self.style.SUCCESS(f'Created {created_likes} unique answer likes.'))
 
         self.stdout.write(self.style.SUCCESS('Database filled successfully!'))

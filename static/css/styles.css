@@ -68,6 +68,23 @@
     background-color: #0F80CB !important;
 }
 
+.btn-white {
+    border-color: #cdd4df !important;
+    border-radius: 3px;
+}
+
+.btn-white:hover {
+    background-color: #E2E9F4 !important;
+}
+
+button.active {
+    background-color: #3E99E3 !important;
+}
+
+.btn-white.active:hover {
+    background-color: #2c80c4 !important;
+}
+
 .btn-outline-primary {
     border: 1px solid #3E99E3 !important;
     color: #3E99E3 !important;
