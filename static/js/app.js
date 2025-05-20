@@ -52,3 +52,44 @@ questionRatingButtons.forEach(item =>
         )
     })
 )
+
+const correctAnswersButtons = document.querySelectorAll('button[data-answer-id]')
+
+correctAnswersButtons.forEach(item =>
+    item.addEventListener('click', () => {
+        const answerId = item.dataset.answerId
+        const questionId = item.dataset.questionId
+
+        fetch(`/correct`, {
+            method: "POST",
+            headers: {'X-CSRFToken': getCookie('csrftoken')},
+            body: JSON.stringify({
+                answer_id: answerId,
+                question_id: questionId
+            }),
+            mode: "same-origin"
+        })
+        .then(response =>
+            response.json().then(data => {
+                if (data.success)
+                {
+                    if (item.classList.contains('text-success')) {
+                        item.classList.remove('text-success')
+                        item.classList.add('text-secondary')
+                    }
+                    else {
+                        for (const b of correctAnswersButtons)
+                            if (b.classList.contains('text-success')) {
+                                b.classList.remove('text-success')
+                                b.classList.add('text-secondary')
+                                break
+                            }
+
+                        item.classList.add('text-success')
+                        item.classList.remove('text-secondary')
+                    }
+                }
+            })
+        )
+    })
+)

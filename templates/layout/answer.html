@@ -1,5 +1,19 @@
 {% load static %}
 <div class="card shadow-sm rounded-4 p-3 mb-2">
+    {% if question.questioner == user %}
+    <button class="btn btn-link accept-answer-btn
+            {% if answer == question.correct_answer %}text-success{% else %}text-secondary{% endif %} position-absolute"
+            style="top: 10px; right: 10px; font-size: 3rem;"
+            data-answer-id="{{ answer.id }}"
+            data-question-id="{{ question.id }}">
+      <i class="bi bi-check-circle"></i>
+    </button>
+    {% elif question.correct_answer == answer %}
+    <div class="position-absolute text-success"
+         style="top: 10px; right: 10px; font-size: 3rem;">
+      <i class="bi bi-check-circle"></i>
+    </div>
+    {% endif %}
   <div class="row g-3 align-items-center">
     <div class="col-auto text-center">
       <div class="border rounded-3 overflow-hidden" style="width: 120px; height: 120px;">
@@ -28,18 +42,9 @@
       </div>
     </div>
     <div class="col">
-      <div class="d-flex flex-column h-100 justify-content-between">
-        <div>
-          <p class="card-text mb-3">
-            {{ answer.text }}
-          </p>
-        </div>
-        {% if question.questioner == user %}
-        <div class="mb-3 form-check">
-            <input type="checkbox" class="form-check-input">
-            <label class="form-check-label" for="exampleCheck1">Correct!</label>
-        </div>
-        {% endif %}
+      <div class="d-flex flex-column h-100 justify-content-between me-3">
+          <p class="mb-2">{{ answer.text }}</p>
+          <small class="text-muted">Author: {{ answer.answerer.username }}</small>
       </div>
     </div>
   </div>

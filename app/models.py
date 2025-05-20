@@ -4,7 +4,7 @@ from django.db.models import Count
 
 class QuestionManager(models.Manager):
 
-    def full_info(self, question_id, user=None):
+    def full_info(self, question_id):
         return (
             self.get_queryset()
             .select_related('questioner')
@@ -26,9 +26,6 @@ class QuestionManager(models.Manager):
     def by_tag(self, tag_name):
         return self.get_queryset().prefetch_related('tags').filter(tags__name=tag_name)
 
-    def by_id(self, obj_id):
-        return self.filter(id=obj_id).first()
-
 class AnswerManager(models.Manager):
     def answer_with_full_info(self):
         return (self.get_queryset()
@@ -37,14 +34,18 @@ class AnswerManager(models.Manager):
     def answers(self, question):
         return self.answer_with_full_info().filter(question=question)
 
-    def by_id(self, obj_id):
-        return self.filter(id=obj_id).first()
-
 class Question(models.Model):
     title = models.CharField(max_length=255)
     body = models.TextField()
     questioner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='questioner')
     rating = models.IntegerField(default=0)
+    correct_answer = models.OneToOneField(
+        'Answer',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='correct_answer'
+    )
 
     objects = QuestionManager()
 

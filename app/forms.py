@@ -61,6 +61,7 @@ class RegisterForm(forms.ModelForm):
             else:
                 Profile.objects.create(user=user, avatar='images/default_avatar.png')
 
+        return user
 
 class UserProfileForm(forms.ModelForm):
     login = forms.CharField(label="Login")

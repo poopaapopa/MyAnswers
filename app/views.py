@@ -1,6 +1,7 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.core.paginator import Paginator
-from django.shortcuts import render, redirect
+from django.core.exceptions import PermissionDenied
+from django.shortcuts import render, redirect, get_object_or_404
 from app.forms import LoginForm, RegisterForm, UserProfileForm, AskQuestionForm, AnswerForm
 from app.models import Question, Answer, QuestionLike, AnswerLike
 from django.http import Http404
@@ -23,9 +24,7 @@ def handle_like(obj_id, user, is_like, is_question):
     field_name = 'question' if is_question else 'answer'
     Model = Question if is_question else Answer
 
-    obj = Model.objects.by_id(obj_id)
-    if not obj:
-        raise Http404(f"{Model.__name__} does not exist")
+    obj = get_object_or_404(Model, id=obj_id)
 
     like, created = LikeModel.objects.get_or_create(
         **{field_name: obj, 'liker': user},
@@ -122,7 +121,8 @@ def signup(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
+            user = form.save()
+            auth.login(request, user)
             return redirect(reverse('edit'))
     else:
         form = RegisterForm()
@@ -167,3 +167,18 @@ def like(request):
     rating = handle_like(object_id, request.user, is_like, True if is_question else False)
 
     return JsonResponse({'rating': rating})
+
+@require_POST
+def correct(request):
+    data = json.loads(request.body)
+    question = get_object_or_404(Question, id=data.get('question_id'))
+    if question.questioner != request.user:
+        raise PermissionDenied
+
+    answer = get_object_or_404(Answer, id=data.get('answer_id'))
+    if question.correct_answer != answer:
+        question.correct_answer = answer
+    else:
+        question.correct_answer = None
+    question.save()
+    return JsonResponse({'success': True})
