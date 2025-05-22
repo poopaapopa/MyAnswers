@@ -35,6 +35,8 @@ class RegisterForm(forms.ModelForm):
 
     def clean_email(self):
         email = self.cleaned_data.get('email')
+        if not email:
+            self.add_error('email', 'Email cannot be empty.')
         if User.objects.filter(email=email).exists():
             self.add_error('email', 'Email is already registered.')
         return email
@@ -59,7 +61,7 @@ class RegisterForm(forms.ModelForm):
             if avatar:
                 Profile.objects.create(user=user, avatar=avatar)
             else:
-                Profile.objects.create(user=user, avatar='images/default_avatar.png')
+                Profile.objects.create(user=user, avatar='images/avatar.png')
 
         return user
 
@@ -112,6 +114,11 @@ class AskQuestionForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
+
+    def clean(self):
+        tags = self.cleaned_data['tags_field'].split(' ')
+        if len(tags) > 5:
+            self.add_error('tags_field', 'Question can maximum have 5 tags')
 
     def save(self, commit=True):
         question = super().save(commit=False)

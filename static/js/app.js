@@ -34,7 +34,7 @@ questionRatingButtons.forEach(item =>
                 oppositeButton.classList.remove('active')
         }
 
-        fetch(`/like`, {
+        fetch(`/like/`, {
             method: "POST",
             headers: {'X-CSRFToken': getCookie('csrftoken')},
             body: JSON.stringify({
@@ -44,11 +44,15 @@ questionRatingButtons.forEach(item =>
             }),
             mode: "same-origin"
         })
-        .then(response =>
-            response.json().then(data => {
-                const counter = document.querySelector(`[data-object-rating-counter="${objectId}"]`)
-                counter.innerHTML = data.rating
-            })
+        .then(response => {
+                if (response.status === 401)
+                    window.location.href = '/login/?next=' + window.location.pathname
+                else
+                    response.json().then(data => {
+                        const counter = document.querySelector(`[data-object-rating-counter="${objectId}"]`)
+                        counter.innerHTML = data.rating
+                    })
+            }
         )
     })
 )
@@ -60,7 +64,7 @@ correctAnswersButtons.forEach(item =>
         const answerId = item.dataset.answerId
         const questionId = item.dataset.questionId
 
-        fetch(`/correct`, {
+        fetch(`/correct/`, {
             method: "POST",
             headers: {'X-CSRFToken': getCookie('csrftoken')},
             body: JSON.stringify({

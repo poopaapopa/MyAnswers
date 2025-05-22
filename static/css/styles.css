@@ -102,14 +102,20 @@ button.active {
 }
 
 .btn-success:hover {
-    color: #b075f3 !important;
+    background-color: #b075f3 !important;
+    border-color: #b075f3 !important;
 }
 
 .accept-answer-btn {
   transition: color 0.2s;
 }
-.accept-answer-btn:hover, .text-success {
-  color: #b075f3 !important;
+
+.accept-answer-btn:hover {
+  color: #C28FFF !important;
+}
+
+.text-success {
+    color: #b075f3 !important;
 }
 
 .page-content {

@@ -19,9 +19,7 @@ class QuestionManager(models.Manager):
         return self.get_queryset().order_by('-id')
 
     def popular(self):
-        return self.get_queryset().annotate(
-            like_count=Count('likes', distinct=True)
-        ).order_by('-like_count')
+        return self.get_queryset().order_by('-rating')
 
     def by_tag(self, tag_name):
         return self.get_queryset().prefetch_related('tags').filter(tags__name=tag_name)

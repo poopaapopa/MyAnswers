@@ -104,18 +104,19 @@ def tag(request, tag_name):
     return render(request, 'tag_questions.html', context={'questions': questions, 'page': page, 'tag': tag_name})
 
 def login(request):
+    next_url = request.POST.get('next') or request.GET.get('next') or reverse('edit')
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
             user = auth.authenticate(request, **form.cleaned_data)
             if user:
                 auth.login(request, user)
-                return redirect(reverse('edit'))
+                return redirect(next_url)
             else:
                 form.add_error(field=None, error="User not found")
     else:
         form = LoginForm()
-    return render(request, 'login.html', {'form': form})
+    return render(request, 'login.html', {'form': form, 'next': next_url})
 
 def signup(request):
     if request.method == 'POST':
@@ -149,7 +150,7 @@ def profile_edit(request):
         return redirect(reverse('edit'))
     else:
         form = UserProfileForm(instance=user, initial={'avatar': user.profile.avatar})
-    return render(request, 'profile_edit.html', {'form': form, 'nickname': user.first_name})
+    return render(request, 'profile_edit.html', {'form': form, 'user': user})
 
 @login_required(login_url=reverse_lazy('login'))
 def logout(request):
@@ -157,9 +158,10 @@ def logout(request):
     return redirect('/')
 
 @require_POST
-@login_required(login_url=reverse_lazy('login'))
 def like(request):
     data = json.loads(request.body)
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'not authorized'}, status=401)
     object_id = data.get('object_id')
     is_like = data.get('is_like')
     is_question = data.get('is_question')

@@ -4,13 +4,34 @@
 
 {% block content %}
 <div class="d-flex justify-content-center align-items-center mt-3">
-    <div class="card p-4" style="width: 50rem; height: 100%; background-color: #E2E9F4;">
-        <h3 class="mb-3">Settings: {{ nickname }}</h3>
+    <div class="card p-4 gap-3" style="width: 50rem; height: 100%; background-color: #E2E9F4;">
+        <h3 class="mb-1">Settings: {{ user.first_name }}</h3>
         <form action="{% url "edit" %}" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
-            {% bootstrap_form form %}
-            <div class="d-grid">
-                <button type="submit" class="btn btn-primary" id="submitButton">Save</button>
+
+            <div class="row">
+                <div class="col-md-7 d-flex flex-column h-100">
+                    {% bootstrap_field form.login %}
+                    {% bootstrap_field form.nickname %}
+                    {% bootstrap_field form.email %}
+                </div>
+
+                <div class="col-md-5 d-flex flex-column h-100 align-items-center justify-content-center">
+                    {% if user.profile.avatar %}
+                        <div class="mb-2 text-center">
+                            <p class="mb-2">Current avatar:</p>
+                            <img class="img-thumbnail rounded-3 mb-3" src="{{ user.profile.avatar.url }}" alt="Current Avatar"
+                                 style="max-width: 200px; max-height: 115px;">
+                        </div>
+                    {% endif %}
+                    <div class="mb-3">
+                        <label for="id_avatar" class="form-label">Upload new avatar</label>
+                        <input type="file" name="avatar" class="form-control" id="id_avatar">
+                    </div>
+                </div>
+            </div>
+            <div class="d-grid mt-3">
+                <button type="submit" class="btn btn-primary">Save</button>
             </div>
         </form>
     </div>
