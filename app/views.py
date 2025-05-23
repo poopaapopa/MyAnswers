@@ -11,7 +11,11 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse
+from django.conf import settings
+from cent import Client, PublishRequest
 import json
+import jwt
+import time
 
 def paginate(objects_list, request, per_page=10):
     page_num = request.GET.get('page', 1)
@@ -61,6 +65,16 @@ def get_user_votes(objects, user, ids, is_question):
 
     return objects
 
+def generate_token(user_id):
+    claims = {"sub": str(user_id), "exp": int(time.time()) + 5 * 600}
+    token = jwt.encode(claims, settings.CENTRIFUGO_HMAC_SECRET, algorithm="HS256")
+    return token
+
+def get_cent_client():
+    api_url = f"http://{settings.CENTRIFUGO_URL}/api"
+    client = Client(api_url, settings.CENTRIFUGO_API_KEY)
+    return client
+
 def index(request):
     questions = Question.objects.recent()
     page = paginate(questions, request, 5)
@@ -78,21 +92,46 @@ def hot(request):
     return render(request, 'hot_questions.html', context={'questions': questions, 'page': page})
 
 def question(request, question_id):
+    ws_channel = f"question_{question_id}"
     if request.method == 'POST':
         if not request.user.is_authenticated:
             return redirect('login')
+
         form = AnswerForm(request.POST, user=request.user, question_id=question_id)
         if form.is_valid():
             answer = form.save()
-            return redirect(f"{reverse('question', args=[question_id])}#answer-{answer.id}")
+            client = get_cent_client()
+            data = {
+                "answer_id": answer.id,
+                "username": answer.answerer.username,
+                "avatar": answer.answerer.profile.avatar.url,
+                "text": answer.text,
+                "rating": answer.rating,
+            }
+            request = PublishRequest(channel=ws_channel, data=data)
+            client.publish(request)
+            return redirect(f"{reverse('question', args=[question_id])}#answer")
+
     q = Question.objects.full_info(question_id)
     if not q:
         raise Http404("Question does not exist")
+
+    token = generate_token(request.user.id)
+
     q = get_user_votes([q], request.user, [question_id], True)[0]
     answers = Answer.objects.answers(q)
     answers = get_user_votes(answers, request.user, [a.id for a in answers], False)
     form = AnswerForm()
-    return render(request, 'single_question.html', context={'question': q, 'answers': answers, 'form': form, 'user': request.user})
+
+    return render(request, 'single_question.html', context={
+        'question': q,
+        'answers': answers,
+        'form': form,
+        'user': request.user,
+        'token': token,
+        'ws_url': settings.CENTRIFUGO_URL,
+        'ws_channel': ws_channel,
+    })
 
 def tag(request, tag_name):
     filtered_questions = Question.objects.by_tag(tag_name)

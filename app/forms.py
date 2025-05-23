@@ -61,7 +61,7 @@ class RegisterForm(forms.ModelForm):
             if avatar:
                 Profile.objects.create(user=user, avatar=avatar)
             else:
-                Profile.objects.create(user=user, avatar='images/avatar.png')
+                Profile.objects.create(user=user, avatar='/images/avatar.png')
 
         return user
 

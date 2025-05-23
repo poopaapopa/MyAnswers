@@ -135,3 +135,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_ROOT = BASE_DIR / 'uploads'
 MEDIA_URL = '/uploads/'
+
+CENTRIFUGO_HMAC_SECRET = "secret"
+CENTRIFUGO_API_KEY = "secret"
+CENTRIFUGO_URL = "localhost:8010"
